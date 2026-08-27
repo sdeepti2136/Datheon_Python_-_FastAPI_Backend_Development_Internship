@@ -9,50 +9,6 @@ import { useReveal } from "../hooks/useReveal";
  */
 const PROJECTS = [
   {
-    title: "Job Portal",
-    description:
-      "A full-stack job portal where users can register, browse job listings, and submit applications, backed by REST APIs and a database for storing users, jobs, and applications.",
-    tech: ["React", "Node.js", "Express.js", "MongoDB", "REST APIs"],
-    features: [
-      "User authentication",
-      "Job listings & search",
-      "Job applications",
-      "Backend REST APIs",
-      "Database integration",
-    ],
-    github: null,
-    demo: null,
-    needsDetail: false,
-  },
-  {
-    title: "Search Engine",
-    description:
-      "A search engine built over a structured dataset of records, allowing users to query and retrieve relevant results with ranking logic to surface the best matches first.",
-    tech: ["Python"],
-    features: [
-      "Search over structured records",
-      "Custom ranking logic",
-      "Query handling & result retrieval",
-    ],
-    github: null,
-    demo: null,
-    needsDetail: false,
-  },
-  {
-    title: "Import-Export System",
-    description:
-      "A system for managing import-export trade operations, tracking shipments, invoices, and general trade records to help businesses keep their cross-border transactions organized.",
-    tech: [],
-    features: [
-      "Shipment tracking",
-      "Invoice management",
-      "Trade record keeping",
-    ],
-    github: null,
-    demo: null,
-    needsDetail: false,
-  },
-  {
     title: "AI in Manufacturing",
     description:
       "An academic ML/AI project applying machine learning techniques to a manufacturing use case. Add a short description of the specific problem it solves (e.g. defect detection, predictive maintenance) and what you built.",
@@ -62,23 +18,7 @@ const PROJECTS = [
     demo: null,
     needsDetail: true,
   },
-  {
-    title: "Employee Management & HRMS Platform",
-    description:
-      "A full-stack HR and workspace platform with real-time chat, attendance tracking, and document management, built with a Node.js/Express/MongoDB backend and a React frontend.",
-    tech: ["React", "Node.js", "Express.js", "MongoDB", "Socket.IO"],
-    features: [
-      "Role-based authentication (admin & employee)",
-      "Real-time chat & notifications (Socket.IO)",
-      "Attendance with tap-in / tap-out tracking",
-      "Leave management for managers",
-      "Document management module",
-      "Task assignment module",
-    ],
-    github: null,
-    demo: null,
-    needsDetail: false,
-  },
+
   {
     title: "Fake Logo Detection",
     description:
