@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datheon BookStore — Live API Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.2);
+      --rose: #f43f5e;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --glass: backdrop-filter: blur(12px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top right, #1e1b4b 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP NAVIGATION */
+    header {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary), #ec4899);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-weight: 500;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .btn {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); }
+    .btn-emerald {
+      background: var(--emerald);
+      color: #0b0f19;
+    }
+    .btn-emerald:hover { background: #059669; }
+
+    /* HERO STATS */
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      width: 100%;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-top: 0.35rem;
+      color: white;
+    }
+
+    /* CONTROLS */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+    }
+    .search-input {
+      background: rgba(11, 15, 25, 0.6);
+      border: 1px solid var(--card-border);
+      color: white;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      min-width: 280px;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--primary); }
+
+    /* BOOK CARDS GRID */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .book-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+    .book-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+    .book-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), #ec4899);
+    }
+    .book-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+    }
+    .book-author {
+      font-size: 0.85rem;
+      color: #a5b4fc;
+      margin-bottom: 0.8rem;
+    }
+    .book-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+    .book-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .book-price {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #34d399;
+    }
+    .book-isbn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: #cbd5e1;
+    }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal {
+      background: #131b2e;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .modal-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(11, 15, 25, 0.8);
+      border: 1px solid var(--card-border);
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      color: white;
+      font-family: inherit;
+      font-size: 0.88rem;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--primary); }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1e293b;
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.4rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 200;
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="logo-badge">D</div>
+      <div>
+        <div class="brand-title">Datheon BookStore</div>
+        <div class="brand-sub">FastAPI Microservice Backend</div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="server-status">
+        <span class="pulse-dot"></span>
+        <span id="server-status-text">FastAPI Live (Port 8000)</span>
+      </div>
+      <button class="btn btn-outline" onclick="openLoginModal()" id="auth-btn">🔐 Admin Login</button>
+      <a href="/docs" target="_blank" class="btn btn-outline">📜 Swagger Docs</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Inventory</div>
+        <div class="stat-value" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Session Role</div>
+        <div class="stat-value" id="stat-role" style="color: #a5b4fc;">Guest</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rate Limiter (SlowAPI)</div>
+        <div class="stat-value" style="color: #34d399;">5 req/min (Auth)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Async Background Tasks</div>
+        <div class="stat-value" style="color: #f43f5e;">Active</div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-bar">
+      <input type="text" id="search-input" class="search-input" placeholder="🔍 Search by title or author..." oninput="handleSearch()">
+      
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn btn-outline" onclick="triggerRateLimitTest()">⚡ Test Rate Limiter (Spam 6x)</button>
+        <button class="btn btn-emerald" onclick="openAddBookModal()">+ Add New Book</button>
+      </div>
+    </div>
+
+    <!-- BOOKS GRID -->
+    <div id="books-container" class="books-grid">
+      <!-- Injected via JavaScript -->
+    </div>
+  </main>
+
+  <!-- ADD BOOK MODAL -->
+  <div class="modal-backdrop" id="add-modal">
+    <div class="modal">
+      <div class="modal-title">Add New Book (Admin)</div>
+      <div class="form-group">
+        <label class="form-label">Book Title</label>
+        <input type="text" id="book-title" class="form-input" placeholder="e.g. Modern FastAPI Architecture">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Author</label>
+        <input type="text" id="book-author" class="form-input" placeholder="e.g. Sebastián Ramírez">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+        <div class="form-group">
+          <label class="form-label">Price ($)</label>
+          <input type="number" id="book-price" class="form-input" step="0.01" placeholder="39.99">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Publication Year</label>
+          <input type="number" id="book-year" class="form-input" placeholder="2024">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ISBN (10 or 13 digits)</label>
+        <input type="text" id="book-isbn" class="form-input" placeholder="9781492080770">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" id="book-desc" class="form-input" placeholder="Brief summary...">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="fillSampleBook()">✨ Autofill Sample</button>
+        <button class="btn btn-outline" onclick="closeModal('add-modal')">Cancel</button>
+        <button class="btn btn-emerald" onclick="submitCreateBook()">Save Book</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal-backdrop" id="login-modal">
+    <div class="modal">
+      <div class="modal-title">Admin Login</div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Log in to obtain a JWT token and unlock administrative permissions.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Username / Email</label>
+        <input type="email" id="login-email" class="form-input" value="admin@datheon.local">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-password" class="form-input" value="ChangeMeAdmin123!">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal('login-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitLogin()">Log In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000/api/v1";
+    let authToken = localStorage.getItem("datheon_jwt") || "";
+    let currentRole = localStorage.getItem("datheon_role") || "Guest";
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.style.borderLeftColor = isError ? "var(--rose)" : "var(--emerald)";
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 4000);
+    }
+
+    function updateAuthUI() {
+      const statRole = document.getElementById("stat-role");
+      const authBtn = document.getElementById("auth-btn");
+      if (authToken) {
+        statRole.innerText = currentRole.toUpperCase();
+        statRole.style.color = "#34d399";
+        authBtn.innerText = "🚪 Logout";
+        authBtn.onclick = logout;
+      } else {
+        statRole.innerText = "GUEST";
+        statRole.style.color = "#a5b4fc";
+        authBtn.innerText = "🔐 Admin Login";
+        authBtn.onclick = openLoginModal;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("datheon_jwt");
+      localStorage.removeItem("datheon_role");
+      authToken = "";
+      currentRole = "Guest";
+      updateAuthUI();
+      showToast("Logged out successfully.");
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = "flex"; }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+    function openLoginModal() { openModal("login-modal"); }
+    function openAddBookModal() {
+      if (!authToken) {
+        showToast("Please log in as Admin first to add books!", true);
+        openLoginModal();
+        return;
+      }
+      openModal("add-modal");
+    }
+
+    function fillSampleBook() {
+      const rand = Math.floor(1000 + Math.random() * 9000);
+      document.getElementById("book-title").value = "High-Performance FastAPI Handbook";
+      document.getElementById("book-author").value = "Datheon Engineering Team";
+      document.getElementById("book-price").value = "45.00";
+      document.getElementById("book-year").value = "2026";
+      document.getElementById("book-isbn").value = `978155555${rand}`;
+      document.getElementById("book-desc").value = "Deep dive into production asynchronous Python architecture.";
+    }
+
+    async function submitLogin() {
+      const email = document.getElementById("login-email").value;
+      const pwd = document.getElementById("login-password").value;
+
+      const formData = new URLSearchParams();
+      formData.append("username", email);
+      formData.append("password", pwd);
+
+      try {
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          showToast(err.detail || "Authentication failed", true);
+          return;
+        }
+
+        const data = await res.json();
+        authToken = data.access_token;
+        currentRole = data.role;
+        localStorage.setItem("datheon_jwt", authToken);
+        localStorage.setItem("datheon_role", currentRole);
+
+        updateAuthUI();
+        closeModal("login-modal");
+        showToast(`Welcome back, ${email}! Role: ${currentRole}`);
+      } catch (e) {
+        showToast("Error connecting to server.", true);
+      }
+    }
+
+    async function fetchBooks(searchQuery = "") {
+      try {
+        let url = `${API_URL}/books?limit=50&offset=0`;
+        if (searchQuery) url += `&title=${encodeURIComponent(searchQuery)}`;
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Could not fetch books");
+        const data = await res.json();
+
+        document.getElementById("stat-total").innerText = data.total;
+        renderBooks(data.items);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderBooks(books) {
+      const container = document.getElementById("books-container");
+      if (!books.length) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No books found in the catalog. Click "+ Add New Book" to create one!</div>`;
+        return;
+      }
+
+      container.innerHTML = books.map(b => `
+        <div class="book-card">
+          <div>
+            <div class="book-title">${b.title}</div>
+            <div class="book-author">by ${b.author} (${b.publication_year})</div>
+            <div class="book-desc">${b.description || "No description provided."}</div>
+          </div>
+          <div class="book-meta">
+            <div class="book-price">$${parseFloat(b.price).toFixed(2)}</div>
+            <div class="book-isbn">ISBN: ${b.isbn}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function submitCreateBook() {
+      const title = document.getElementById("book-title").value.trim();
+      const author = document.getElementById("book-author").value.trim();
+      const price = parseFloat(document.getElementById("book-price").value);
+      const publication_year = parseInt(document.getElementById("book-year").value);
+      const isbn = document.getElementById("book-isbn").value.trim();
+      const description = document.getElementById("book-desc").value.trim();
+
+      const payload = { title, author, price, publication_year, isbn, description };
+
+      try {
+        const res = await fetch(`${API_URL}/books`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          showToast(err.detail || "Validation Error", true);
+          return;
+        }
+
+        closeModal("add-modal");
+        showToast("🎉 Book created successfully! (Background notification queued)");
+        fetchBooks();
+      } catch (e) {
+        showToast("Error creating book.", true);
+      }
+    }
+
+    async function triggerRateLimitTest() {
+      showToast("⚡ Sending 6 consecutive login attempts to test SlowAPI...");
+      let hit429 = false;
+
+      for (let i = 1; i <= 6; i++) {
+        const formData = new URLSearchParams();
+        formData.append("username", "ratelimit_tester@datheon.in");
+        formData.append("password", "TestPassword123!");
+
+        const res = await fetch(`${API_URL}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData
+        });
+
+        if (res.status === 429) {
+          hit429 = true;
+          showToast("🛡️ Rate Limit Triggered: HTTP 429 Too Many Requests! (Retry-After: 60s)", true);
+          break;
+        }
+      }
+
+      if (!hit429) {
+        showToast("Requests dispatched. Rate limit not reached yet.");
+      }
+    }
+
+    let searchDebounce;
+    function handleSearch() {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        fetchBooks(document.getElementById("search-input").value);
+      }, 300);
+    }
+
+    // INITIALIZE
+    updateAuthUI();
+    fetchBooks();
+  </script>
+</body>
+</html>
