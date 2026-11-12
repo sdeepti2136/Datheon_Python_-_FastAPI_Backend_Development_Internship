@@ -1,115 +1,317 @@
-# Deepti S — Portfolio
+# Datheon BookStore Backend API
 
-A React + Vite portfolio site: Home, About, Skills, Experience, Projects,
-Certifications, Resume, and Contact.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0%20(Async)-D71F00.svg?style=flat)](https://www.sqlalchemy.org/)
+[![Pydantic](https://img.shields.io/badge/Pydantic-V2-E92063.svg?style=flat&logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 1. Run it locally
+An asynchronous, production-conscious RESTful backend built for the **Datheon Python + FastAPI Backend Development Internship**. This project unites four foundational backend engineering milestones into a single, cohesive, tested, and containerized microservice.
 
+---
+
+## Internship Overview
+
+- **Organization**: [Datheon](https://www.datheon.in/)
+- **Program**: [Python + FastAPI Backend Development Internship](https://www.datheon.in/training/catalog/python-fastapi-backend-internship)
+- **Repository Name**: `Datheon_FastAPI_Internship`
+- **Candidate Track**: Backend Engineering & API Security (B.Tech CSE Graduate)
+
+---
+
+## Completed Internship Tasks
+
+| Task | Title | Key Deliverables & Implementation Highlights |
+| :--- | :--- | :--- |
+| **Task 1** | **BookStore REST API with Pydantic Validation** | Complete CRUD operations (`/books`), strict Pydantic V2 request/response schemas, ISBN format verification, query filters (title, author, ISBN, price range, publication year), pagination (`limit` & `offset`), HTTP status codes, and interactive Swagger UI documentation. |
+| **Task 2** | **User Authentication & RBAC with JWT** | Secure user registration (`/auth/register`), OAuth2 password login (`/auth/login`), profile inspection (`/auth/me`), direct bcrypt password hashing with unique salt, JWT signature creation/verification via PyJWT, Role-Based Access Control (`user` vs `admin`), and an interactive administrative bootstrap script (`scripts/create_admin.py`). |
+| **Task 3** | **Database Persistence with SQLAlchemy & SQLite** | Full migration from volatile storage to asynchronous SQLite persistence (`sqlite+aiosqlite`), SQLAlchemy 2.0 async engine and declarative models (`User`, `Book`), relational foreign keys (`created_by_user_id`), ACID transactions, unique constraints, and automated schema generation during application startup. |
+| **Task 4** | **Microservice with Background Tasks, Rate Limiting & Docker** | Non-blocking background worker (`BackgroundTasks`) dispatching audit and inventory notifications, IP-based request throttling using SlowAPI (5 attempts/min on auth, 100/min overall), container health check endpoint (`/health`), multi-stage production Dockerfile with non-root security (`appuser`), persistent host volume mounts, and `docker-compose.yml`. |
+
+---
+
+## Architectural Highlights
+
+```
+Datheon_FastAPI_Internship/
+│
+├── app/
+│   ├── __init__.py               # Application package root
+│   ├── main.py                   # FastAPI instantiation, middleware, lifespan manager
+│   ├── config.py                 # Pydantic BaseSettings environment configuration
+│   ├── logging_config.py         # Structured logging configuration
+│   ├── database.py               # SQLAlchemy 2.0 async engine, declarative Base, session generator
+│   ├── models.py                 # User and Book ORM models with constraints & indexes
+│   ├── schemas.py                # Pydantic V2 validation & response serialization models
+│   ├── security.py               # Bcrypt hashing, JWT encode/decode, OAuth2 scheme
+│   ├── dependencies.py           # Reusable route dependencies (get_db, get_current_user, require_admin)
+│   │
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── books.py              # BookStore catalog CRUD endpoints & filters
+│   │   ├── auth.py               # Registration, OAuth2 login, token refresh
+│   │   └── users.py              # Administrative user and role management
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   └── notifications.py      # Decoupled background notification tasks
+│   │
+│   └── core/
+│       ├── __init__.py
+│       └── rate_limit.py         # SlowAPI rate limiter & 429 response handler
+│
+├── scripts/
+│   └── create_admin.py           # Secure administrative bootstrap utility
+│
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py               # Pytest async fixtures, test database, auth headers
+│   ├── test_books.py             # BookStore CRUD, pagination, filtering tests
+│   ├── test_auth.py              # Registration, JWT login, RBAC permission tests
+│   ├── test_database.py          # SQLAlchemy persistence & constraint verification
+│   └── test_rate_limit.py        # SlowAPI rate limiting & health check verification
+│
+├── .env.example                  # Environment configuration template
+├── .gitignore                    # Git exclusions (caches, virtualenvs, databases)
+├── .dockerignore                 # Docker build exclusions
+├── Dockerfile                    # Production-ready non-root Docker container
+├── docker-compose.yml            # Docker Compose orchestration with persistent volume
+├── requirements.txt              # Pinned, tested Python dependencies
+├── README.md                     # Comprehensive project documentation
+└── LICENSE                       # MIT License
+```
+
+---
+
+## Technology Stack
+
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Asynchronous ASGI)
+- **ASGI Web Server**: [Uvicorn](https://www.uvicorn.org/)
+- **Data Validation & Settings**: [Pydantic V2](https://docs.pydantic.dev/) & [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/)
+- **Database & ORM**: [SQLAlchemy 2.0](https://www.sqlalchemy.org/) (Async Engine) with [aiosqlite](https://aiosqlite.omnilib.dev/)
+- **Security & Cryptography**: [bcrypt](https://pypi.org/project/bcrypt/) & [PyJWT](https://pyjwt.readthedocs.io/)
+- **Rate Limiting**: [SlowAPI](https://slowapi.readthedocs.io/) (Token Bucket / Fixed Window)
+- **Automated Testing**: [Pytest](https://pytest.org/), [pytest-asyncio](https://github.com/pytest-dev/pytest-asyncio), and [HTTPX](https://www.python-httpx.org/)
+- **Containerization**: [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
+
+---
+
+## Local Setup & Installation
+
+### Prerequisites
+- Python 3.10, 3.11, or 3.12 installed on your system.
+- Git installed.
+- (Optional) Docker and Docker Compose installed for container execution.
+
+### Step 1: Clone the Repository
+```powershell
+git clone https://github.com/YOUR_USERNAME/Datheon_FastAPI_Internship.git
+cd Datheon_FastAPI_Internship
+```
+
+### Step 2: Set Up Virtual Environment
+
+#### On Windows (PowerShell):
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+*(If PowerShell blocks script activation, run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`)*
+
+#### On Linux / macOS:
 ```bash
-npm install
-npm run dev
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-Open the URL Vite prints (usually http://localhost:5173).
-
-To build a production version:
-
-```bash
-npm run build
-npm run preview   # serves the built version locally
+### Step 3: Install Dependencies
+```powershell
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-## 2. Add your resume PDF
-
-Put your resume file at:
-
-```
-public/resume.pdf
+### Step 4: Configure Environment Variables
+Copy the template `.env.example` into `.env`:
+```powershell
+Copy-Item .env.example .env
 ```
 
-The filename must be exactly `resume.pdf` (lowercase) — the "Download Resume"
-buttons in the Hero and Resume sections both link to `/resume.pdf` and will
-work automatically once the file is there. Delete `public/PUT_RESUME_HERE.txt`
-once you've added it.
+Generate a secure 32+ character JWT secret:
+```powershell
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+Paste this generated secret into `.env` under `JWT_SECRET_KEY`.
 
-## 3. Fill in the remaining project details
+---
 
-Open `src/components/Projects.jsx`:
+## Initializing Database & Administrator Account
 
-- **Search Engine** and **Import-Export System** only have placeholder
-  descriptions (marked with an "add details" tag on the card) — I didn't
-  have enough information about these two to describe them accurately, so
-  replace the `description`, `tech`, and `features` fields with the real
-  details.
-- Every project's `github` and `demo` fields are set to `null`. Add your
-  real repository/deployment URLs as strings, e.g.:
-  ```js
-  github: "https://github.com/sdeepti2136/job-portal",
-  demo: "https://job-portal-demo.vercel.app",
-  ```
-  Until you do, the GitHub button shows as disabled and the Live Demo
-  button stays hidden — so nothing broken ever ships.
+The application automatically creates required SQLite database tables upon initial startup. To initialize your first administrative user securely without exposing credentials in git:
 
-## 4. Contact form
-
-The contact form does not have a backend, so it can't silently "send" a
-message on its own — that would be a fake confirmation. On submit, it opens
-the visitor's email client with the message pre-filled (a `mailto:` link).
-
-If you'd rather have messages submit directly without opening an email
-client, the simplest secure option is a form-backend service:
-
-- **Formspree** (formspree.io) — free tier, you POST the form directly to
-  them, no server needed, no secret key exposed in the frontend.
-- **EmailJS** (emailjs.com) — similar idea, sends via your own email
-  provider.
-
-Both let you swap the `handleSubmit` function in `src/components/Contact.jsx`
-for a `fetch()` call to their endpoint, with no backend of your own to host.
-
-## 5. Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial portfolio"
-git branch -M main
-git remote add origin https://github.com/sdeepti2136/deepti-portfolio.git
-git push -u origin main
+```powershell
+python scripts/create_admin.py
 ```
 
-(Create the empty `deepti-portfolio` repo on GitHub first, or swap the URL
-above for whatever repo name you use.)
+You can either accept the environment defaults or enter custom credentials interactively:
+- **Default Email**: `admin@datheon.local`
+- **Default Password**: `ChangeMeAdmin123!`
 
-## 6. Deploy on Vercel
+---
 
-1. Go to https://vercel.com and sign in with your GitHub account.
-2. Click **Add New → Project** and import the `deepti-portfolio` repo.
-3. Vercel auto-detects Vite — leave the default build settings:
-   - Build command: `vite build`
-   - Output directory: `dist`
-4. Click **Deploy**. You'll get a URL like
-   `https://deepti-portfolio.vercel.app` (or a random subdomain you can
-   rename in Project Settings → Domains).
+## Running the Application Locally
 
-## 7. Use the live URL in job applications
+Start the asynchronous development server with auto-reload:
 
-Once deployed:
+```powershell
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
 
-- Add the Vercel URL to your **resume** (header, next to email/phone).
-- Add it to your **LinkedIn** profile under Contact Info → Website.
-- Include it in the **portfolio/website** field on job application forms
-  (Cognizant, Concentrix, IBPS-adjacent MNC portals, etc. often have one).
-- Add it to your **email signature** if you use one for follow-ups.
+Once running:
+- **Root Welcome**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- **Interactive Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **ReDoc Documentation**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+- **OpenAPI Schema**: [http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json)
+- **Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 
-## GitHub repositories widget
+---
 
-The brief mentioned optionally pulling live repos from the GitHub API. This
-was intentionally left out: calling the GitHub API from the browser on every
-page load is unauthenticated-rate-limited and adds a loading/failure state
-for no real benefit on a portfolio with a handful of hand-picked projects.
-The Projects section already lists your best work with real links once you
-fill them in (see step 3) — that's more curated than an auto-pulled repo
-list would be. If you later want a live "recent repos" widget, the secure
-approach is a small serverless function (e.g. a Vercel API route) that calls
-GitHub's API server-side, so no token is ever in frontend code.
+## Running with Docker & Docker Compose
+
+The project includes a production-conscious Dockerfile with a non-root `appuser` and persistent volume mounts.
+
+### Build and Launch:
+```powershell
+docker compose up --build -d
+```
+
+### View Live Container Logs:
+```powershell
+docker compose logs -f backend
+```
+
+### Inspect Container Health:
+```powershell
+docker ps
+```
+The status column will display `healthy` once the container passes its built-in Python health checks.
+
+### Stop the Container:
+```powershell
+docker compose down
+```
+*(Your SQLite database file persists safely inside `./data/datheon_bookstore.db` across container rebuilds).*
+
+---
+
+## API Endpoints Reference
+
+All endpoints are grouped under `/api/v1`:
+
+### 1. Catalog Management (`/api/v1/books`)
+| Method | Endpoint | Access Role | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/books` | **Admin Only** | Register a new book (triggers background inventory notification) |
+| `GET` | `/api/v1/books` | **Public** | List books with search filters & pagination (`limit`, `offset`) |
+| `GET` | `/api/v1/books/{id}` | **Public** | Retrieve detailed metadata for a single book |
+| `PUT` | `/api/v1/books/{id}` | **Admin Only** | Update book title, price, description, year, or ISBN |
+| `DELETE`| `/api/v1/books/{id}` | **Admin Only** | Permanently delete a book from catalog |
+
+### 2. Authentication & Authorization (`/api/v1/auth`)
+| Method | Endpoint | Access Role | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/register`| **Public** | Register account (bcrypt hash, rate-limited to 5/min) |
+| `POST` | `/api/v1/auth/login` | **Public** | Authenticate credentials & receive JWT token (rate-limited) |
+| `GET` | `/api/v1/auth/me` | **Authenticated** | Inspect current user's profile and assigned role |
+| `POST` | `/api/v1/auth/refresh` | **Authenticated** | Issue refreshed JWT token for active session |
+
+### 3. User Administration (`/api/v1/users`)
+| Method | Endpoint | Access Role | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/users` | **Admin Only** | View list of all registered users |
+| `PATCH`| `/api/v1/users/{id}/role` | **Admin Only** | Change user role (`user` ↔ `admin`) |
+
+---
+
+## Automated Testing Suite
+
+The project includes an end-to-end Pytest suite testing all four tasks against an isolated SQLite test database.
+
+### Run All Tests:
+```powershell
+pytest -v
+```
+
+### Run Specific Test Modules:
+```powershell
+# Task 1 & 3: Book CRUD, filtering, pagination, and database persistence
+pytest -v tests/test_books.py
+
+# Task 2: User registration, login, bcrypt hashing, and RBAC
+pytest -v tests/test_auth.py
+
+# Task 3: Database transactions and constraint integrity
+pytest -v tests/test_database.py
+
+# Task 4: Rate limiting and OpenAPI docs verification
+pytest -v tests/test_rate_limit.py
+```
+
+---
+
+## Security Implementation Review
+
+1. **Password Hashing**: Plaintext passwords are never stored. Passwords are salted and hashed using direct `bcrypt.hashpw` with unique salts.
+2. **JWT Cryptography**: Signed using HMAC-SHA256 (`HS256`). Payloads include `sub`, `user_id`, `role`, `iat`, and `exp`.
+3. **Role-Based Authorization (RBAC)**: Enforced via reusable dependencies (`require_admin`). Unauthorized users receive HTTP `403 Forbidden`.
+4. **Rate Limiting**: Protected by SlowAPI to defend against brute-force attacks and credential stuffing.
+5. **SQL Injection Defense**: Built entirely on SQLAlchemy 2.0 parameter-binding ORM expressions; zero raw string SQL interpolation.
+6. **Data Leak Prevention**: Database models and password hashes are never exposed directly. Output responses are filtered through strictly typed Pydantic models.
+7. **Container Hardening**: Docker executes under a non-root system user (`appuser`, UID 1000) with strict layer caching.
+
+---
+
+## Visual Demonstration & Screenshots
+
+> Place your captured screenshots in a `docs/screenshots/` folder and link them below:
+
+### 1. Interactive Swagger Documentation (`/docs`)
+![Swagger UI Overview](docs/screenshots/01_swagger_docs.png)
+
+### 2. Admin Authentication & JWT Token Issuance
+![JWT Login](docs/screenshots/02_jwt_auth.png)
+
+### 3. Protected Book Creation & Rate Limiting (HTTP 429)
+![Rate Limiting](docs/screenshots/03_rate_limiting.png)
+
+### 4. Automated Pytest Execution Results
+![Pytest Run](docs/screenshots/04_pytest_results.png)
+
+---
+
+## Demonstration Video Walkthrough
+
+- **LinkedIn Video Walkthrough**: [Link to Your LinkedIn Demonstration Post](https://www.linkedin.com/)
+- **Duration**: ~3 minutes
+- **Topics Demonstrated**:
+  1. Project Architecture & Task Overview
+  2. Swagger UI interactive testing
+  3. Registering user & obtaining JWT Bearer token
+  4. Role-based endpoint protection (User vs Admin)
+  5. Background task console logs
+  6. Rate limiting triggering HTTP 429
+  7. Automated Pytest execution
+
+---
+
+## Future Enhancements
+- PostgreSQL dialect migration via `asyncpg` for multi-worker distributed concurrency.
+- Redis-backed distributed cache and token blacklist for instant JWT revocation.
+- Celery / ARQ worker queue for high-throughput distributed background workloads.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Project developed for the **Datheon Python + FastAPI Backend Development Internship**.
